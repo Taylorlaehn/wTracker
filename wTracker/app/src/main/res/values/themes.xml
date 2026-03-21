@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.WeightTracker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/text_primary</item>
+        <item name="colorPrimaryVariant">@color/text_secondary</item>
+        <item name="colorOnPrimary">@color/background_primary</item>
+        <item name="android:windowBackground">@color/background_page</item>
+    </style>
+
+    <style name="UnitButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="strokeColor">@color/card_stroke</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="android:paddingHorizontal">16dp</item>
+    </style>
+
+</resources>

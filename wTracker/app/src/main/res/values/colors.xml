@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background_primary">#FFFFFF</color>
+    <color name="background_page">#F4F4F4</color>
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_tertiary">#AAAAAA</color>
+    <color name="delta_up">#3D9A5E</color>
+    <color name="delta_down">#C0392B</color>
+    <color name="delta_neutral">#BBBBBB</color>
+    <color name="card_stroke">#E8E8E8</color>
+</resources>
