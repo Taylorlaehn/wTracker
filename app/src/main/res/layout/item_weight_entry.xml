@@ -35,15 +35,6 @@
             android:textStyle="bold"
             android:fontFamily="monospace"
             android:minWidth="60dp" />
-
-        <TextView
-            android:id="@+id/tvUnit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
-            android:text="lbs"
-            android:textColor="@color/text_tertiary"
-            android:textSize="11sp" />
     </LinearLayout>
 
     <!-- Date/time -->

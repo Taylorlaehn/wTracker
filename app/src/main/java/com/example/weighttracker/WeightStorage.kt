@@ -25,7 +25,6 @@ class WeightStorage(context: Context) {
                         WeightEntry(
                             id        = parser.getAttributeValue(null, "id").toInt(),
                             weight    = parser.getAttributeValue(null, "weight").toDouble(),
-                            unit      = parser.getAttributeValue(null, "unit"),
                             timestamp = parser.getAttributeValue(null, "timestamp").toLong()
                         )
                     )
@@ -52,7 +51,6 @@ class WeightStorage(context: Context) {
                 serializer.startTag(null, "entry")
                 serializer.attribute(null, "id",        entry.id.toString())
                 serializer.attribute(null, "weight",    entry.weight.toString())
-                serializer.attribute(null, "unit",      entry.unit)
                 serializer.attribute(null, "timestamp", entry.timestamp.toString())
                 serializer.endTag(null, "entry")
             }

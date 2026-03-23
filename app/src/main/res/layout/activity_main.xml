@@ -172,26 +172,6 @@
                     android:textStyle="bold"
                     android:paddingHorizontal="24dp" />
             </LinearLayout>
-
-            <!-- Unit toggle -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="10dp">
-
-                <Button
-                    android:id="@+id/btnLbs"
-                    style="@style/UnitButton"
-                    android:rotation="0"
-                    android:text="lbs" />
-
-                <Button
-                    android:id="@+id/btnKg"
-                    style="@style/UnitButton"
-                    android:layout_marginStart="8dp"
-                    android:text="kg" />
-            </LinearLayout>
         </LinearLayout>
 
         <!-- History header -->

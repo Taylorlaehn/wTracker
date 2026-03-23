@@ -16,13 +16,6 @@ class WeightAdapter(
     private val onDelete: (WeightEntry) -> Unit
 ) : ListAdapter<WeightEntry, WeightAdapter.WeightViewHolder>(DiffCallback()) {
 
-    private var displayUnit: String = "lbs"
-
-    fun setUnit(unit: String) {
-        displayUnit = unit
-        notifyDataSetChanged()
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeightViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_weight_entry, parent, false)
@@ -32,12 +25,11 @@ class WeightAdapter(
     override fun onBindViewHolder(holder: WeightViewHolder, position: Int) {
         val entry = getItem(position)
         val prevEntry = if (position + 1 < itemCount) getItem(position + 1) else null
-        holder.bind(entry, prevEntry, displayUnit, onDelete)
+        holder.bind(entry, prevEntry, onDelete)
     }
 
     class WeightViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val weightText: TextView = itemView.findViewById(R.id.tvWeight)
-        private val unitText: TextView = itemView.findViewById(R.id.tvUnit)
         private val dateText: TextView = itemView.findViewById(R.id.tvDate)
         private val timeText: TextView = itemView.findViewById(R.id.tvTime)
         private val deltaText: TextView = itemView.findViewById(R.id.tvDelta)
@@ -47,12 +39,10 @@ class WeightAdapter(
         fun bind(
             entry: WeightEntry,
             prevEntry: WeightEntry?,
-            displayUnit: String,
             onDelete: (WeightEntry) -> Unit
         ) {
-            val displayWeight = convertWeight(entry.weight, entry.unit, displayUnit)
+            val displayWeight = entry.weight
             weightText.text = String.format("%.1f", displayWeight)
-            unitText.text = displayUnit
 
             val sdfDate = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
             val sdfTime = SimpleDateFormat("h:mm a", Locale.getDefault())
@@ -70,8 +60,7 @@ class WeightAdapter(
             timeText.text = sdfTime.format(date)
 
             if (prevEntry != null) {
-                val prevDisplay = convertWeight(prevEntry.weight, prevEntry.unit, displayUnit)
-                val diff = displayWeight - prevDisplay
+                val diff = displayWeight - prevEntry.weight
                 when {
                     diff > 0.05 -> {
                         deltaText.text = String.format("+%.1f", diff)
@@ -96,12 +85,6 @@ class WeightAdapter(
             }
 
             deleteBtn.setOnClickListener { onDelete(entry) }
-        }
-
-        private fun convertWeight(value: Double, from: String, to: String): Double {
-            if (from == to) return value
-            return if (from == "lbs" && to == "kg") value * 0.453592
-            else value * 2.20462
         }
     }
 

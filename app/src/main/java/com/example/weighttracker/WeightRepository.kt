@@ -19,11 +19,7 @@ class WeightRepository(context: Context) {
     fun getLowestWeight(unit: String): Double? {
         val entries = _entries.value ?: return null
         if (entries.isEmpty()) return null
-        return entries.minOf { e ->
-            if (e.unit == unit) e.weight
-            else if (unit == "kg") e.weight * 0.453592
-            else e.weight * 2.20462
-        }
+        return entries.minOf { it.weight }
     }
 
     fun insert(entry: WeightEntry) {

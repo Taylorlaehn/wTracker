@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: WeightViewModel by viewModels()
@@ -20,8 +21,6 @@ class MainActivity : AppCompatActivity() {
 
         val weightInput = findViewById<EditText>(R.id.etWeight)
         val logButton = findViewById<Button>(R.id.btnLog)
-        val btnLbs = findViewById<Button>(R.id.btnLbs)
-        val btnKg = findViewById<Button>(R.id.btnKg)
         val tvLatest = findViewById<TextView>(R.id.tvStatLatest)
         val tvLowest = findViewById<TextView>(R.id.tvStatLowest)
         val tvCount = findViewById<TextView>(R.id.tvStatCount)
@@ -51,10 +50,6 @@ class MainActivity : AppCompatActivity() {
             } else false
         }
 
-        // Unit toggle
-        btnLbs.setOnClickListener { viewModel.setUnit("lbs") }
-        btnKg.setOnClickListener { viewModel.setUnit("kg") }
-
         // Clear all
         btnClearAll.setOnClickListener {
             AlertDialog.Builder(this)
@@ -65,14 +60,6 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
 
-        // Observe unit changes
-        viewModel.currentUnit.observe(this) { unit ->
-            val isLbs = unit == "lbs"
-            btnLbs.isSelected = isLbs
-            btnKg.isSelected = !isLbs
-            adapter.setUnit(unit)
-        }
-
         // Observe entries
         viewModel.allEntries.observe(this) { entries ->
             adapter.submitList(entries)
@@ -80,13 +67,9 @@ class MainActivity : AppCompatActivity() {
             recyclerView.visibility = if (isEmpty) android.view.View.GONE else android.view.View.VISIBLE
             emptyState.visibility = if (isEmpty) android.view.View.VISIBLE else android.view.View.GONE
 
-            val unit = viewModel.currentUnit.value ?: "lbs"
             if (entries.isNotEmpty()) {
                 val latest = entries.first()
-                val displayWeight = if (latest.unit == unit) latest.weight
-                    else if (unit == "kg") latest.weight * 0.453592
-                    else latest.weight * 2.20462
-                tvLatest.text = String.format("%.1f", displayWeight)
+                tvLatest.text = String.format("%.1f", latest.weight)
             } else {
                 tvLatest.text = "—"
             }
@@ -112,6 +95,6 @@ class MainActivity : AppCompatActivity() {
         input.text.clear()
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(input.windowToken, 0)
-        Toast.makeText(this, "Logged ${String.format("%.1f", value)} ${viewModel.currentUnit.value}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Logged ${String.format("%.1f", value)}", Toast.LENGTH_SHORT).show()
     }
 }
