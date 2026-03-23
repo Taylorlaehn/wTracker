@@ -22,12 +22,13 @@
             android:paddingBottom="16dp">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Weight Tracker"
                 android:textColor="@color/text_primary"
                 android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:gravity="center" />
         </LinearLayout>
 
         <!-- Stats row -->
@@ -128,15 +129,6 @@
             android:background="@drawable/card_background"
             android:orientation="vertical"
             android:padding="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Log your weight"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
