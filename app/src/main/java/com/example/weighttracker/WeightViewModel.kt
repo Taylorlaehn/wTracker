@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 
 class WeightViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -16,7 +16,7 @@ class WeightViewModel(application: Application) : AndroidViewModel(application) 
     val allEntries: LiveData<List<WeightEntry>> = repository.allEntries
     val entryCount: LiveData<Int> = repository.entryCount
 
-    val lowestWeight: LiveData<Double?> = Transformations.map(allEntries) {
+    val lowestWeight: LiveData<Double?> = allEntries.map {
         repository.getLowestWeight(_currentUnit.value ?: "lbs")
     }
 

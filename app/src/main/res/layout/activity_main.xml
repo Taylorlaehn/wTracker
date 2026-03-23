@@ -183,8 +183,8 @@
                 <Button
                     android:id="@+id/btnLbs"
                     style="@style/UnitButton"
-                    android:text="lbs"
-                    android:selected="true" />
+                    android:rotation="0"
+                    android:text="lbs" />
 
                 <Button
                     android:id="@+id/btnKg"
