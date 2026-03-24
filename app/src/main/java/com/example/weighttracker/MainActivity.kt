@@ -1,6 +1,9 @@
 package com.example.weighttracker
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -9,12 +12,16 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.math.abs
+import android.view.HapticFeedbackConstants
 
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: WeightViewModel by viewModels()
     private lateinit var adapter: WeightAdapter
+    private var isInitialLoad = true
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -50,6 +57,39 @@ class MainActivity : AppCompatActivity() {
             } else false
         }
 
+        // Swipe/Scroll gesture for weight input
+        val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onDown(e: MotionEvent): Boolean {
+                return true
+            }
+
+            override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+                if (abs(distanceX) > abs(distanceY)) {
+                    val currentVal = weightInput.text.toString().toDoubleOrNull() ?: 0.0
+                    // Sensitivity: about 10 pixels for 0.1 units
+                    val dp = resources.displayMetrics.density
+                    val change = -distanceX / (30.0 * dp)
+                    val newVal = (currentVal + change).coerceIn(0.0, 999.9)
+                    weightInput.setText(String.format("%.1f", newVal))
+                    weightInput.setSelection(weightInput.text.length)
+                    weightInput.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                    return true
+                }
+                return false
+            }
+        })
+
+        weightInput.setOnTouchListener { v, event ->
+            val gestureHandled = gestureDetector.onTouchEvent(event)
+            if (gestureHandled && (event.action == MotionEvent.ACTION_MOVE)) {
+                // Prevent vertical scroll while scrubbing
+                v.parent.requestDisallowInterceptTouchEvent(true)
+                true
+            } else {
+                false 
+            }
+        }
+
         // Clear all
         btnClearAll.setOnClickListener {
             AlertDialog.Builder(this)
@@ -70,6 +110,11 @@ class MainActivity : AppCompatActivity() {
             if (entries.isNotEmpty()) {
                 val latest = entries.first()
                 tvLatest.text = String.format("%.1f", latest.weight)
+                
+                if (isInitialLoad) {
+                    weightInput.setText(String.format("%.1f", latest.weight))
+                    isInitialLoad = false
+                }
             } else {
                 tvLatest.text = "—"
             }
@@ -92,9 +137,12 @@ class MainActivity : AppCompatActivity() {
             return
         }
         viewModel.insert(value)
-        input.text.clear()
+        
+        // Keep the value as the new default
+        input.clearFocus()
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(input.windowToken, 0)
+
         Toast.makeText(this, "Logged ${String.format("%.1f", value)}", Toast.LENGTH_SHORT).show()
     }
 }
