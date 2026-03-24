@@ -63,16 +63,37 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
 
+            private var lastScrollTime = 0L
+
             override fun onScroll(e1: MotionEvent?, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
                 if (abs(distanceX) > abs(distanceY)) {
+                    val now = System.currentTimeMillis()
+                    val minInterval = 100L // ms between changes — raise to slow it down
+
                     val currentVal = weightInput.text.toString().toDoubleOrNull() ?: 0.0
-                    // Sensitivity: about 10 pixels for 0.1 units
                     val dp = resources.displayMetrics.density
-                    val change = -distanceX / (30.0 * dp)
-                    val newVal = (currentVal + change).coerceIn(0.0, 999.9)
-                    weightInput.setText(String.format("%.1f", newVal))
-                    weightInput.setSelection(weightInput.text.length)
-                    weightInput.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                    val rawChange = -distanceX / (10.0 * dp)
+                    val change = (rawChange * (1.0 + abs(rawChange) * 3.0)).coerceIn(-0.2, 0.2)
+
+                    val effectiveChange = when {
+                        change == 0.0 -> 0.0
+                        abs(change) < 0.1 -> 0.1 * Math.signum(change)
+                        else -> change
+                    }
+
+                    if (effectiveChange != 0.0 && (now - lastScrollTime) >= minInterval) {
+                        val newVal = (currentVal + effectiveChange).coerceIn(0.0, 999.9)
+                        val formatted = String.format("%.1f", newVal)
+
+                        if (formatted != weightInput.text.toString()) {
+                            weightInput.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                            lastScrollTime = now
+                        }
+
+                        weightInput.setText(formatted)
+                        weightInput.setSelection(weightInput.text.length)
+                    }
+
                     return true
                 }
                 return false
