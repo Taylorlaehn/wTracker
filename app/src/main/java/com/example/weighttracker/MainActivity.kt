@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 import android.view.HapticFeedbackConstants
+import android.view.View
 
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: WeightViewModel by viewModels()
     private lateinit var adapter: WeightAdapter
     private var isInitialLoad = true
+    private var showFullHistory = false
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         val emptyState = findViewById<TextView>(R.id.tvEmpty)
         val btnClearAll = findViewById<TextView>(R.id.btnClearAll)
+        val btnViewMore = findViewById<TextView>(R.id.btnViewMore)
 
         // Setup RecyclerView
         adapter = WeightAdapter { entry ->
@@ -121,12 +124,17 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
 
+        btnViewMore.setOnClickListener {
+            showFullHistory = !showFullHistory
+            updateHistoryList(viewModel.allEntries.value ?: emptyList())
+        }
+
         // Observe entries
         viewModel.allEntries.observe(this) { entries ->
-            adapter.submitList(entries)
+            updateHistoryList(entries)
             val isEmpty = entries.isEmpty()
-            recyclerView.visibility = if (isEmpty) android.view.View.GONE else android.view.View.VISIBLE
-            emptyState.visibility = if (isEmpty) android.view.View.VISIBLE else android.view.View.GONE
+            recyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
+            emptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
 
             if (entries.isNotEmpty()) {
                 val latest = entries.first()
@@ -148,6 +156,23 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.lowestWeight.observe(this) { lowest ->
             tvLowest.text = if (lowest != null) String.format("%.1f", lowest) else "—"
+        }
+    }
+
+    private fun updateHistoryList(entries: List<WeightEntry>) {
+        val btnViewMore = findViewById<TextView>(R.id.btnViewMore)
+        if (entries.size <= 5) {
+            adapter.submitList(entries)
+            btnViewMore.visibility = View.GONE
+        } else {
+            btnViewMore.visibility = View.VISIBLE
+            if (showFullHistory) {
+                adapter.submitList(entries)
+                btnViewMore.text = "View Less"
+            } else {
+                adapter.submitList(entries.take(5))
+                btnViewMore.text = "View More"
+            }
         }
     }
 
